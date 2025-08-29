@@ -12,9 +12,32 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String    @default("")
-  email     String    @unique @default("")
-  password  String
-  createdAt DateTime? @default(now())
+  id                      String    @id @default(cuid())
+  name                    String    @default("")
+  email                   String    @unique @default("")
+  password                String
+  createdAt               DateTime? @default(now())
+  from_Events_responsavel Events[]  @relation("Events_responsavel")
+}
+
+model Events {
+  id            String            @id @default(cuid())
+  evento        String            @default("")
+  descricao     String            @default("")
+  horas         String            @default("")
+  data          DateTime
+  local         String            @default("")
+  status        EventsStatusType? @default(agendado)
+  responsavel   User?             @relation("Events_responsavel", fields: [responsavelId], references: [id])
+  responsavelId String?           @map("responsavel")
+  createdAt     DateTime?         @default(now())
+
+  @@index([responsavelId])
+}
+
+enum EventsStatusType {
+  agendado
+  em_andamento
+  concluido
+  cancelado
 }

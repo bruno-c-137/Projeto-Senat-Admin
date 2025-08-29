@@ -117,6 +117,111 @@ input UserCreateInput {
   createdAt: DateTime
 }
 
+type Events {
+  id: ID!
+  evento: String
+  descricao: String
+  horas: String
+  data: DateTime
+  local: String
+  status: EventsStatusType
+  responsavel: User
+  createdAt: DateTime
+}
+
+enum EventsStatusType {
+  agendado
+  em_andamento
+  concluido
+  cancelado
+}
+
+input EventsWhereUniqueInput {
+  id: ID
+}
+
+input EventsWhereInput {
+  AND: [EventsWhereInput!]
+  OR: [EventsWhereInput!]
+  NOT: [EventsWhereInput!]
+  id: IDFilter
+  evento: StringFilter
+  descricao: StringFilter
+  horas: StringFilter
+  data: DateTimeFilter
+  local: StringFilter
+  status: EventsStatusTypeNullableFilter
+  responsavel: UserWhereInput
+  createdAt: DateTimeNullableFilter
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeFilter
+}
+
+input EventsStatusTypeNullableFilter {
+  equals: EventsStatusType
+  in: [EventsStatusType!]
+  notIn: [EventsStatusType!]
+  not: EventsStatusTypeNullableFilter
+}
+
+input EventsOrderByInput {
+  id: OrderDirection
+  evento: OrderDirection
+  descricao: OrderDirection
+  horas: OrderDirection
+  data: OrderDirection
+  local: OrderDirection
+  status: OrderDirection
+  createdAt: OrderDirection
+}
+
+input EventsUpdateInput {
+  evento: String
+  descricao: String
+  horas: String
+  data: DateTime
+  local: String
+  status: EventsStatusType
+  responsavel: UserRelateToOneForUpdateInput
+  createdAt: DateTime
+}
+
+input UserRelateToOneForUpdateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+}
+
+input EventsUpdateArgs {
+  where: EventsWhereUniqueInput!
+  data: EventsUpdateInput!
+}
+
+input EventsCreateInput {
+  evento: String
+  descricao: String
+  horas: String
+  data: DateTime
+  local: String
+  status: EventsStatusType
+  responsavel: UserRelateToOneForCreateInput
+  createdAt: DateTime
+}
+
+input UserRelateToOneForCreateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -129,6 +234,12 @@ type Mutation {
   updateUsers(data: [UserUpdateArgs!]!): [User]
   deleteUser(where: UserWhereUniqueInput!): User
   deleteUsers(where: [UserWhereUniqueInput!]!): [User]
+  createEvents(data: EventsCreateInput!): Events
+  createEventsList(data: [EventsCreateInput!]!): [Events]
+  updateEvents(where: EventsWhereUniqueInput!, data: EventsUpdateInput!): Events
+  updateEventsList(data: [EventsUpdateArgs!]!): [Events]
+  deleteEvents(where: EventsWhereUniqueInput!): Events
+  deleteEventsList(where: [EventsWhereUniqueInput!]!): [Events]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -155,6 +266,9 @@ type Query {
   user(where: UserWhereUniqueInput!): User
   users(where: UserWhereInput! = {}, orderBy: [UserOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: UserWhereUniqueInput): [User!]
   usersCount(where: UserWhereInput! = {}): Int
+  events(where: EventsWhereUniqueInput!): Events
+  eventsList(where: EventsWhereInput! = {}, orderBy: [EventsOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EventsWhereUniqueInput): [Events!]
+  eventsListCount(where: EventsWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }

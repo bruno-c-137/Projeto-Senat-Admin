@@ -16,7 +16,7 @@ import { lists } from './schema'
 
 // authentication is configured separately here too, but you might move this elsewhere
 // when you write your list-level access control functions, as they typically rely on session data
-console.log(process.env.DATABASE_URL)
+
 
 import { withAuth, session } from './auth/auth'
 
