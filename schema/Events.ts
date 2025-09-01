@@ -1,6 +1,6 @@
 import { list } from '@keystone-6/core'
 import { allowAll } from '@keystone-6/core/access'
-import { text, timestamp, select, relationship } from '@keystone-6/core/fields'
+import { text, timestamp, select, relationship, integer } from '@keystone-6/core/fields'
 
 export const Events = list({
     access: allowAll,
@@ -26,6 +26,11 @@ export const Events = list({
         }),
         local: text({
             label: 'Local'
+        }),
+        pontos: integer({
+            defaultValue: 10,
+            label: 'Pontos por Check-in',
+            validation: { isRequired: true }
         }),
         status: select({
             type: 'enum',

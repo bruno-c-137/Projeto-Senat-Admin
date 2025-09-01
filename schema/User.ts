@@ -1,6 +1,6 @@
 import { list } from '@keystone-6/core'
 import { allowAll } from '@keystone-6/core/access'
-import { text, timestamp, password } from '@keystone-6/core/fields'
+import { text, timestamp, password, checkbox, integer, relationship } from '@keystone-6/core/fields'
 
 export const User = list({
   access: allowAll,
@@ -17,6 +17,17 @@ export const User = list({
     password: password({
       validation: { isRequired: true },
       label: 'Senha'
+    }),
+    isAdmin: checkbox({ defaultValue: false, label: 'Administrador' }),
+    pontos: integer({
+      defaultValue: 0,
+      label: 'Pontos',
+      validation: { isRequired: true }
+    }),
+    checkIns: relationship({
+      ref: 'CheckIn.user',
+      many: true,
+      label: 'Check-ins'
     }),
     createdAt: timestamp({
       defaultValue: { kind: 'now' },

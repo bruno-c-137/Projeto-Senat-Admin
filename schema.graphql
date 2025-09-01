@@ -6,6 +6,10 @@ type User {
   name: String
   email: String
   password: PasswordState
+  isAdmin: Boolean
+  pontos: Int
+  checkIns(where: CheckInWhereInput! = {}, orderBy: [CheckInOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CheckInWhereUniqueInput): [CheckIn!]
+  checkInsCount(where: CheckInWhereInput! = {}): Int
   createdAt: DateTime
 }
 
@@ -27,6 +31,9 @@ input UserWhereInput {
   id: IDFilter
   name: StringFilter
   email: StringFilter
+  isAdmin: BooleanFilter
+  pontos: IntFilter
+  checkIns: CheckInManyRelationFilter
   createdAt: DateTimeNullableFilter
 }
 
@@ -75,6 +82,28 @@ input NestedStringFilter {
   not: NestedStringFilter
 }
 
+input BooleanFilter {
+  equals: Boolean
+  not: BooleanFilter
+}
+
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
+}
+
+input CheckInManyRelationFilter {
+  every: CheckInWhereInput
+  some: CheckInWhereInput
+  none: CheckInWhereInput
+}
+
 input DateTimeNullableFilter {
   equals: DateTime
   in: [DateTime!]
@@ -90,6 +119,8 @@ input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
   email: OrderDirection
+  isAdmin: OrderDirection
+  pontos: OrderDirection
   createdAt: OrderDirection
 }
 
@@ -102,7 +133,17 @@ input UserUpdateInput {
   name: String
   email: String
   password: String
+  isAdmin: Boolean
+  pontos: Int
+  checkIns: CheckInRelateToManyForUpdateInput
   createdAt: DateTime
+}
+
+input CheckInRelateToManyForUpdateInput {
+  disconnect: [CheckInWhereUniqueInput!]
+  set: [CheckInWhereUniqueInput!]
+  create: [CheckInCreateInput!]
+  connect: [CheckInWhereUniqueInput!]
 }
 
 input UserUpdateArgs {
@@ -114,7 +155,15 @@ input UserCreateInput {
   name: String
   email: String
   password: String
+  isAdmin: Boolean
+  pontos: Int
+  checkIns: CheckInRelateToManyForCreateInput
   createdAt: DateTime
+}
+
+input CheckInRelateToManyForCreateInput {
+  create: [CheckInCreateInput!]
+  connect: [CheckInWhereUniqueInput!]
 }
 
 type Events {
@@ -124,6 +173,7 @@ type Events {
   horas: String
   data: DateTime
   local: String
+  pontos: Int
   status: EventsStatusType
   responsavel: User
   createdAt: DateTime
@@ -150,6 +200,7 @@ input EventsWhereInput {
   horas: StringFilter
   data: DateTimeFilter
   local: StringFilter
+  pontos: IntFilter
   status: EventsStatusTypeNullableFilter
   responsavel: UserWhereInput
   createdAt: DateTimeNullableFilter
@@ -180,6 +231,7 @@ input EventsOrderByInput {
   horas: OrderDirection
   data: OrderDirection
   local: OrderDirection
+  pontos: OrderDirection
   status: OrderDirection
   createdAt: OrderDirection
 }
@@ -190,6 +242,7 @@ input EventsUpdateInput {
   horas: String
   data: DateTime
   local: String
+  pontos: Int
   status: EventsStatusType
   responsavel: UserRelateToOneForUpdateInput
   createdAt: DateTime
@@ -212,6 +265,7 @@ input EventsCreateInput {
   horas: String
   data: DateTime
   local: String
+  pontos: Int
   status: EventsStatusType
   responsavel: UserRelateToOneForCreateInput
   createdAt: DateTime
@@ -220,6 +274,55 @@ input EventsCreateInput {
 input UserRelateToOneForCreateInput {
   create: UserCreateInput
   connect: UserWhereUniqueInput
+}
+
+type CheckIn {
+  id: ID!
+  user: User
+  pontosGanhos: Int
+  local: String
+  createdAt: DateTime
+}
+
+input CheckInWhereUniqueInput {
+  id: ID
+}
+
+input CheckInWhereInput {
+  AND: [CheckInWhereInput!]
+  OR: [CheckInWhereInput!]
+  NOT: [CheckInWhereInput!]
+  id: IDFilter
+  user: UserWhereInput
+  pontosGanhos: IntFilter
+  local: StringFilter
+  createdAt: DateTimeNullableFilter
+}
+
+input CheckInOrderByInput {
+  id: OrderDirection
+  pontosGanhos: OrderDirection
+  local: OrderDirection
+  createdAt: OrderDirection
+}
+
+input CheckInUpdateInput {
+  user: UserRelateToOneForUpdateInput
+  pontosGanhos: Int
+  local: String
+  createdAt: DateTime
+}
+
+input CheckInUpdateArgs {
+  where: CheckInWhereUniqueInput!
+  data: CheckInUpdateInput!
+}
+
+input CheckInCreateInput {
+  user: UserRelateToOneForCreateInput
+  pontosGanhos: Int
+  local: String
+  createdAt: DateTime
 }
 
 """
@@ -240,6 +343,12 @@ type Mutation {
   updateEventsList(data: [EventsUpdateArgs!]!): [Events]
   deleteEvents(where: EventsWhereUniqueInput!): Events
   deleteEventsList(where: [EventsWhereUniqueInput!]!): [Events]
+  createCheckIn(data: CheckInCreateInput!): CheckIn
+  createCheckIns(data: [CheckInCreateInput!]!): [CheckIn]
+  updateCheckIn(where: CheckInWhereUniqueInput!, data: CheckInUpdateInput!): CheckIn
+  updateCheckIns(data: [CheckInUpdateArgs!]!): [CheckIn]
+  deleteCheckIn(where: CheckInWhereUniqueInput!): CheckIn
+  deleteCheckIns(where: [CheckInWhereUniqueInput!]!): [CheckIn]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -269,6 +378,9 @@ type Query {
   events(where: EventsWhereUniqueInput!): Events
   eventsList(where: EventsWhereInput! = {}, orderBy: [EventsOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EventsWhereUniqueInput): [Events!]
   eventsListCount(where: EventsWhereInput! = {}): Int
+  checkIn(where: CheckInWhereUniqueInput!): CheckIn
+  checkIns(where: CheckInWhereInput! = {}, orderBy: [CheckInOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CheckInWhereUniqueInput): [CheckIn!]
+  checkInsCount(where: CheckInWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }
