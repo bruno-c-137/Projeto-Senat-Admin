@@ -10,6 +10,7 @@ type User {
   pontos: Int
   checkIns(where: CheckInWhereInput! = {}, orderBy: [CheckInOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CheckInWhereUniqueInput): [CheckIn!]
   checkInsCount(where: CheckInWhereInput! = {}): Int
+  pontuacaoTotal: Int
   createdAt: DateTime
 }
 
@@ -32,7 +33,7 @@ input UserWhereInput {
   name: StringFilter
   email: StringFilter
   isAdmin: BooleanFilter
-  pontos: IntFilter
+  pontos: IntNullableFilter
   checkIns: CheckInManyRelationFilter
   createdAt: DateTimeNullableFilter
 }
@@ -87,7 +88,7 @@ input BooleanFilter {
   not: BooleanFilter
 }
 
-input IntFilter {
+input IntNullableFilter {
   equals: Int
   in: [Int!]
   notIn: [Int!]
@@ -95,7 +96,7 @@ input IntFilter {
   lte: Int
   gt: Int
   gte: Int
-  not: IntFilter
+  not: IntNullableFilter
 }
 
 input CheckInManyRelationFilter {
@@ -173,7 +174,6 @@ type Events {
   horas: String
   data: DateTime
   local: String
-  pontos: Int
   status: EventsStatusType
   responsavel: User
   createdAt: DateTime
@@ -200,7 +200,6 @@ input EventsWhereInput {
   horas: StringFilter
   data: DateTimeFilter
   local: StringFilter
-  pontos: IntFilter
   status: EventsStatusTypeNullableFilter
   responsavel: UserWhereInput
   createdAt: DateTimeNullableFilter
@@ -231,7 +230,6 @@ input EventsOrderByInput {
   horas: OrderDirection
   data: OrderDirection
   local: OrderDirection
-  pontos: OrderDirection
   status: OrderDirection
   createdAt: OrderDirection
 }
@@ -242,7 +240,6 @@ input EventsUpdateInput {
   horas: String
   data: DateTime
   local: String
-  pontos: Int
   status: EventsStatusType
   responsavel: UserRelateToOneForUpdateInput
   createdAt: DateTime
@@ -265,7 +262,6 @@ input EventsCreateInput {
   horas: String
   data: DateTime
   local: String
-  pontos: Int
   status: EventsStatusType
   responsavel: UserRelateToOneForCreateInput
   createdAt: DateTime
@@ -279,6 +275,7 @@ input UserRelateToOneForCreateInput {
 type CheckIn {
   id: ID!
   user: User
+  ativacao: Ativacao
   pontosGanhos: Int
   local: String
   createdAt: DateTime
@@ -294,9 +291,21 @@ input CheckInWhereInput {
   NOT: [CheckInWhereInput!]
   id: IDFilter
   user: UserWhereInput
+  ativacao: AtivacaoWhereInput
   pontosGanhos: IntFilter
   local: StringFilter
   createdAt: DateTimeNullableFilter
+}
+
+input IntFilter {
+  equals: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+  not: IntFilter
 }
 
 input CheckInOrderByInput {
@@ -308,9 +317,16 @@ input CheckInOrderByInput {
 
 input CheckInUpdateInput {
   user: UserRelateToOneForUpdateInput
+  ativacao: AtivacaoRelateToOneForUpdateInput
   pontosGanhos: Int
   local: String
   createdAt: DateTime
+}
+
+input AtivacaoRelateToOneForUpdateInput {
+  create: AtivacaoCreateInput
+  connect: AtivacaoWhereUniqueInput
+  disconnect: Boolean
 }
 
 input CheckInUpdateArgs {
@@ -320,9 +336,90 @@ input CheckInUpdateArgs {
 
 input CheckInCreateInput {
   user: UserRelateToOneForCreateInput
+  ativacao: AtivacaoRelateToOneForCreateInput
   pontosGanhos: Int
   local: String
   createdAt: DateTime
+}
+
+input AtivacaoRelateToOneForCreateInput {
+  create: AtivacaoCreateInput
+  connect: AtivacaoWhereUniqueInput
+}
+
+type Ativacao {
+  id: ID!
+  nome: String
+  pontuacao: Int
+  uuid: String
+  evento: Events
+  checkIns(where: CheckInWhereInput! = {}, orderBy: [CheckInOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CheckInWhereUniqueInput): [CheckIn!]
+  checkInsCount(where: CheckInWhereInput! = {}): Int
+  ativa: String
+  createdAt: DateTime
+}
+
+input AtivacaoWhereUniqueInput {
+  id: ID
+}
+
+input AtivacaoWhereInput {
+  AND: [AtivacaoWhereInput!]
+  OR: [AtivacaoWhereInput!]
+  NOT: [AtivacaoWhereInput!]
+  id: IDFilter
+  nome: StringFilter
+  pontuacao: IntFilter
+  uuid: StringFilter
+  evento: EventsWhereInput
+  checkIns: CheckInManyRelationFilter
+  ativa: StringFilter
+  createdAt: DateTimeFilter
+}
+
+input AtivacaoOrderByInput {
+  id: OrderDirection
+  nome: OrderDirection
+  pontuacao: OrderDirection
+  uuid: OrderDirection
+  ativa: OrderDirection
+  createdAt: OrderDirection
+}
+
+input AtivacaoUpdateInput {
+  nome: String
+  pontuacao: Int
+  uuid: String
+  evento: EventsRelateToOneForUpdateInput
+  checkIns: CheckInRelateToManyForUpdateInput
+  ativa: String
+  createdAt: DateTime
+}
+
+input EventsRelateToOneForUpdateInput {
+  create: EventsCreateInput
+  connect: EventsWhereUniqueInput
+  disconnect: Boolean
+}
+
+input AtivacaoUpdateArgs {
+  where: AtivacaoWhereUniqueInput!
+  data: AtivacaoUpdateInput!
+}
+
+input AtivacaoCreateInput {
+  nome: String
+  pontuacao: Int
+  uuid: String
+  evento: EventsRelateToOneForCreateInput
+  checkIns: CheckInRelateToManyForCreateInput
+  ativa: String
+  createdAt: DateTime
+}
+
+input EventsRelateToOneForCreateInput {
+  create: EventsCreateInput
+  connect: EventsWhereUniqueInput
 }
 
 """
@@ -349,6 +446,12 @@ type Mutation {
   updateCheckIns(data: [CheckInUpdateArgs!]!): [CheckIn]
   deleteCheckIn(where: CheckInWhereUniqueInput!): CheckIn
   deleteCheckIns(where: [CheckInWhereUniqueInput!]!): [CheckIn]
+  createAtivacao(data: AtivacaoCreateInput!): Ativacao
+  createAtivacoes(data: [AtivacaoCreateInput!]!): [Ativacao]
+  updateAtivacao(where: AtivacaoWhereUniqueInput!, data: AtivacaoUpdateInput!): Ativacao
+  updateAtivacoes(data: [AtivacaoUpdateArgs!]!): [Ativacao]
+  deleteAtivacao(where: AtivacaoWhereUniqueInput!): Ativacao
+  deleteAtivacoes(where: [AtivacaoWhereUniqueInput!]!): [Ativacao]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -381,6 +484,9 @@ type Query {
   checkIn(where: CheckInWhereUniqueInput!): CheckIn
   checkIns(where: CheckInWhereInput! = {}, orderBy: [CheckInOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: CheckInWhereUniqueInput): [CheckIn!]
   checkInsCount(where: CheckInWhereInput! = {}): Int
+  ativacao(where: AtivacaoWhereUniqueInput!): Ativacao
+  ativacoes(where: AtivacaoWhereInput! = {}, orderBy: [AtivacaoOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: AtivacaoWhereUniqueInput): [Ativacao!]
+  ativacoesCount(where: AtivacaoWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }

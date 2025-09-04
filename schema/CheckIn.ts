@@ -6,7 +6,7 @@ export const CheckIn = list({
   access: {
     operation: {
       query: allowAll,
-      create: denyAll, // Bloqueia criação manual
+      create: denyAll, // Bloqueia criação manual - só via mutation customizada
       update: denyAll, // Bloqueia edição manual
       delete: denyAll  // Bloqueia exclusão manual
     }
@@ -32,8 +32,19 @@ export const CheckIn = list({
       ui: {
         displayMode: 'select',
         labelField: 'name',
-        createView: { fieldMode: 'hidden' }, // Esconde na criação
-        itemView: { fieldMode: 'read' } // Somente leitura
+        createView: { fieldMode: 'hidden' },
+        itemView: { fieldMode: 'read' }
+      }
+    }),
+    ativacao: relationship({
+      ref: 'Ativacao.checkIns',
+      many: false,
+      label: 'Ativação',
+      ui: {
+        displayMode: 'select',
+        labelField: 'nome',
+        createView: { fieldMode: 'hidden' },
+        itemView: { fieldMode: 'read' }
       }
     }),
     pontosGanhos: integer({
@@ -41,9 +52,9 @@ export const CheckIn = list({
       label: 'Pontos Ganhos',
       validation: { isRequired: true },
       ui: {
-        description: 'Pontos ganhos neste check-in',
-        createView: { fieldMode: 'hidden' }, // Esconde na criação
-        itemView: { fieldMode: 'read' } // Somente leitura
+        description: 'Pontos ganhos neste check-in (copiado da ativação)',
+        createView: { fieldMode: 'hidden' },
+        itemView: { fieldMode: 'read' }
       }
     }),
     local: text({
@@ -51,8 +62,8 @@ export const CheckIn = list({
       defaultValue: '',
       ui: {
         description: 'Local onde o check-in foi realizado',
-        createView: { fieldMode: 'hidden' }, // Esconde na criação
-        itemView: { fieldMode: 'read' } // Somente leitura
+        createView: { fieldMode: 'hidden' },
+        itemView: { fieldMode: 'read' }
       }
     }),
     createdAt: timestamp({
@@ -60,8 +71,8 @@ export const CheckIn = list({
       label: 'Data do Check-in',
       ui: {
         description: 'Data e hora do check-in',
-        createView: { fieldMode: 'hidden' }, // Esconde na criação
-        itemView: { fieldMode: 'read' } // Somente leitura
+        createView: { fieldMode: 'hidden' },
+        itemView: { fieldMode: 'read' }
       }
     }),
   }

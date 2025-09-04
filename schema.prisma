@@ -17,24 +17,24 @@ model User {
   email                   String    @unique @default("")
   password                String
   isAdmin                 Boolean   @default(false)
-  pontos                  Int       @default(0)
+  pontos                  Int?      @default(0)
   checkIns                CheckIn[] @relation("CheckIn_user")
   createdAt               DateTime? @default(now())
   from_Events_responsavel Events[]  @relation("Events_responsavel")
 }
 
 model Events {
-  id            String            @id @default(cuid())
-  evento        String            @default("")
-  descricao     String            @default("")
-  horas         String            @default("")
-  data          DateTime
-  local         String            @default("")
-  pontos        Int               @default(10)
-  status        EventsStatusType? @default(agendado)
-  responsavel   User?             @relation("Events_responsavel", fields: [responsavelId], references: [id])
-  responsavelId String?           @map("responsavel")
-  createdAt     DateTime?         @default(now())
+  id                   String            @id @default(cuid())
+  evento               String            @default("")
+  descricao            String            @default("")
+  horas                String            @default("")
+  data                 DateTime
+  local                String            @default("")
+  status               EventsStatusType? @default(agendado)
+  responsavel          User?             @relation("Events_responsavel", fields: [responsavelId], references: [id])
+  responsavelId        String?           @map("responsavel")
+  createdAt            DateTime?         @default(now())
+  from_Ativacao_evento Ativacao[]        @relation("Ativacao_evento")
 
   @@index([responsavelId])
 }
@@ -43,11 +43,29 @@ model CheckIn {
   id           String    @id @default(cuid())
   user         User?     @relation("CheckIn_user", fields: [userId], references: [id])
   userId       String?   @map("user")
+  ativacao     Ativacao? @relation("CheckIn_ativacao", fields: [ativacaoId], references: [id])
+  ativacaoId   String?   @map("ativacao")
   pontosGanhos Int       @default(0)
   local        String    @default("")
   createdAt    DateTime? @default(now())
 
+  @@unique([userId, ativacaoId])
   @@index([userId])
+  @@index([ativacaoId])
+}
+
+model Ativacao {
+  id        String    @id @default(cuid())
+  nome      String    @default("")
+  pontuacao Int       @default(10)
+  uuid      String    @default("")
+  evento    Events?   @relation("Ativacao_evento", fields: [eventoId], references: [id])
+  eventoId  String?   @map("evento")
+  checkIns  CheckIn[] @relation("CheckIn_ativacao")
+  ativa     String    @default("ativa")
+  createdAt DateTime  @default(now())
+
+  @@index([eventoId])
 }
 
 enum EventsStatusType {

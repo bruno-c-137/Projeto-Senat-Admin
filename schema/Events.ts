@@ -27,11 +27,6 @@ export const Events = list({
         local: text({
             label: 'Local'
         }),
-        pontos: integer({
-            defaultValue: 10,
-            label: 'Pontos por Check-in',
-            validation: { isRequired: true }
-        }),
         status: select({
             type: 'enum',
             options: [

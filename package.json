@@ -20,5 +20,9 @@
   },
   "devDependencies": {
     "@types/pg": "^8.15.5"
+  },
+  "resolutions": {
+    "@prisma/client": "^6.15.0",
+    "prisma": "^6.15.0"
   }
 }
