@@ -455,6 +455,22 @@ type Mutation {
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
+  escanearQRCode(qrCodeData: String!, local: String): EscanearQRCodeResult
+  gerarQRCodeAtivacao(ativacaoId: ID!): QRCodeResult
+}
+
+type EscanearQRCodeResult {
+  success: Boolean!
+  message: String!
+  checkIn: JSON
+  pontuacaoTotal: Int
+  ativacao: JSON
+}
+
+type QRCodeResult {
+  success: Boolean!
+  message: String!
+  qrCodeDataURL: String
 }
 
 union UserAuthenticationWithPasswordResult = UserAuthenticationWithPasswordSuccess | UserAuthenticationWithPasswordFailure
@@ -489,6 +505,15 @@ type Query {
   ativacoesCount(where: AtivacaoWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
+  buscarAtivacaoPorUuid(uuid: String!): AtivacaoResult
+  meuHistoricoCheckins: [JSON]
+}
+
+type AtivacaoResult {
+  success: Boolean!
+  message: String!
+  ativacao: JSON
+  jaFezCheckin: Boolean
 }
 
 union AuthenticatedItem = User

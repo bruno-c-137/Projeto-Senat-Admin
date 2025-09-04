@@ -43,15 +43,34 @@ export default withAuth(
     },
     lists,
     session,
-    extendGraphqlSchema: graphql.extend(base => ({
-      mutation: {
-        escanearQRCode,
-        gerarQRCodeAtivacao,
+    server: {
+      cors: {
+        origin: [
+          'http://localhost:3000',
+          'http://localhost:3001', 
+          'http://localhost:5173',
+          'http://localhost:8080',
+          'http://127.0.0.1:3000',
+          'http://127.0.0.1:3001',
+          'http://127.0.0.1:5173',
+          'http://127.0.0.1:8080',
+          // Adicione aqui a URL do seu frontend em produção
+          // 'https://seudominio.com'
+        ],
+        credentials: true,
       },
-      query: {
-        buscarAtivacaoPorUuid,
-        meuHistoricoCheckins,
-      },
-    })),
+    },
+    graphql: {
+      extendGraphqlSchema: graphql.extend(base => ({
+        mutation: {
+          escanearQRCode,
+          gerarQRCodeAtivacao,
+        },
+        query: {
+          buscarAtivacaoPorUuid,
+          meuHistoricoCheckins,
+        },
+      })),
+    },
   } as any)
 )
