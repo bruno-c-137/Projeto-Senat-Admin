@@ -21,7 +21,7 @@ import { lists } from './schema'
 import { withAuth, session } from './auth/auth'
 
 // Import custom mutations
-import { realizarCheckin, buscarAtivacaoPorUuid, meuHistoricoCheckins, gerarQRCodePorSelecao, escanearQRCode } from './mutations/checkin'
+import { buscarAtivacaoPorUuid, meuHistoricoCheckins, escanearQRCode, gerarQRCodeAtivacao } from './mutations/checkin'
 
 export default withAuth(
   config({
@@ -45,9 +45,8 @@ export default withAuth(
     session,
     extendGraphqlSchema: graphql.extend(base => ({
       mutation: {
-        realizarCheckin,
-        gerarQRCodePorSelecao,
         escanearQRCode,
+        gerarQRCodeAtivacao,
       },
       query: {
         buscarAtivacaoPorUuid,

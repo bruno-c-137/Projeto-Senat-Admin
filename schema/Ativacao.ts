@@ -41,7 +41,8 @@ export const Ativacao = list({
       label: 'Evento Relacionado',
       ui: {
         description: 'Evento ao qual esta ativação pertence (obrigatório)',
-        displayMode: 'select'
+        displayMode: 'select',
+        labelField: 'evento'
       }
     }),
     checkIns: relationship({
