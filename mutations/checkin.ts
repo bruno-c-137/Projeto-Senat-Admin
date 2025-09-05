@@ -8,14 +8,9 @@ import {
   criarRespostaErro,
   processarCheckIn,
   gerarQRCodeDataURL,
+  extrairDadosDoQRCode,
+  invalidarQRCodeUUID,
 } from '../utils/checkinUtils'
-
-type QRCodePayload = {
-  uuid: string
-  tipo: 'ativacao_checkin'
-  evento?: string
-  timestamp: number
-}
 
 // Query para buscar informações da ativação pelo UUID (para validar QR code)
 export const buscarAtivacaoPorUuid = graphql.field({
@@ -133,13 +128,12 @@ export const gerarQRCodeAtivacao = graphql.field({
       // Busca a ativação existente
       const ativacao = await (context.query as any).Ativacao.findOne({
         where: { id: ativacaoId },
-        query: 'id nome uuid ativa evento { evento }',
+        query: 'id uuid ativa',
       })
 
       if (!ativacao) return { success: false, message: ERROR_MESSAGES.ATIVACAO_NAO_ENCONTRADA }
 
-      const nomeEvento = ativacao.evento?.evento || ativacao.nome
-      const qrCodeDataURL = await gerarQRCodeDataURL(ativacao.uuid, nomeEvento)
+      const qrCodeDataURL = await gerarQRCodeDataURL(ativacao.uuid, ativacao.id)
 
       return {
         success: true,
@@ -186,26 +180,34 @@ export const escanearQRCode = graphql.field({
     if (!userId) return criarRespostaErro(ERROR_MESSAGES.NAO_AUTENTICADO)
 
     try {
-      let qrPayload: QRCodePayload
+      let dadosQR: { uuid: string; tipo?: string; timestamp?: number; ativacaoId?: string; qrUUID?: string }
       try {
-        qrPayload = JSON.parse(qrCodeData)
-      } catch (error) {
-        return criarRespostaErro(`${ERROR_MESSAGES.QR_INVALIDO} - formato incorreto`)
-      }
+        dadosQR = extrairDadosDoQRCode(qrCodeData)
 
-      if (!qrPayload.uuid || qrPayload.tipo !== QR_CODE_TYPE) {
-        return criarRespostaErro(`${ERROR_MESSAGES.QR_INVALIDO} - dados incorretos`)
+        if (dadosQR.tipo && dadosQR.tipo !== QR_CODE_TYPE) {
+          return criarRespostaErro(`${ERROR_MESSAGES.QR_INVALIDO} - tipo incorreto`)
+        }
+      } catch (error) {
+        return criarRespostaErro(`${ERROR_MESSAGES.QR_INVALIDO} - ${(error as Error).message}`)
       }
 
       const ativacao = await (context.query as any).Ativacao.findFirst({
-        where: { uuid: { equals: qrPayload.uuid } },
+        where: { uuid: { equals: dadosQR.uuid } },
         query: 'id nome pontuacao ativa evento { id evento }',
       })
 
       if (!ativacao) return criarRespostaErro(`${ERROR_MESSAGES.QR_INVALIDO} - ativação não encontrada`)
       if (ativacao.ativa !== 'ativa') return criarRespostaErro(ERROR_MESSAGES.ATIVACAO_INATIVA)
 
-      return processarCheckIn(userId, ativacao, context, local)
+      // Processa check-in
+      const resultado = await processarCheckIn(userId, ativacao, context, local)
+
+      // Se check-in foi bem-sucedido E tem qrUUID, invalida o UUID para evitar reutilização
+      if (resultado.success && dadosQR.qrUUID) {
+        invalidarQRCodeUUID(dadosQR.qrUUID)
+      }
+
+      return resultado
     } catch (error) {
       console.error('Erro ao escanear QR code:', error)
       return criarRespostaErro(ERROR_MESSAGES.ERRO_INTERNO)

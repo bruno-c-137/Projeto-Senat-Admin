@@ -32,27 +32,23 @@ mutation CriarAtivacao {
 
 ## 2. Promotor Gerando QR Code
 
-### Rota: `/gerar-code`
+### Interface Web: `/admin/qrcode`
 
-O promotor acessa a rota `/gerar-code` no site e:
+O promotor acessa a seção de gerar QR Code no webapp admin:
 
-1. **Seleciona o evento** no dropdown
-2. **Clica em "Gerar Code"**
-3. **Recebe o QR code** relacionado ao evento
+1. **Faz login** no sistema administrativo
+2. **Acessa seção "Gerar QR Code"**
+3. **Seleciona ativação** no dropdown (apenas ativações ativas são mostradas)
+4. **Clica em "Gerar QR Code"**
+5. **Recebe QR Code** com URL funcional para exibir
 
 ### Via GraphQL:
 ```graphql
-mutation GerarQRCodeEvento {
-  gerarQRCodePorEvento(eventId: "cl9ebqhxk00as2w01wh9vsm3k") {
+mutation GerarQRCodeAtivacao {
+  gerarQRCodeAtivacao(ativacaoId: "507f1f77bcf86cd799439011") {
     success
     message
     qrCodeDataURL
-    ativacao {
-      id
-      nome
-      pontuacao
-      uuid
-    }
   }
 }
 ```
@@ -61,36 +57,39 @@ mutation GerarQRCodeEvento {
 ```json
 {
   "data": {
-    "gerarQRCodePorEvento": {
+    "gerarQRCodeAtivacao": {
       "success": true,
-      "message": "QR Code gerado com sucesso para Congresso de Tecnologia 2024!",
-      "qrCodeDataURL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-      "ativacao": {
-        "id": "cl9ec1hxk00bt2w01wh9vsn4l",
-        "nome": "Check-in Congresso de Tecnologia 2024",
-        "pontuacao": 10,
-        "uuid": "550e8400-e29b-41d4-a716-446655440000"
-      }
+      "message": "QR Code gerado com sucesso",
+      "qrCodeDataURL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
     }
   }
 }
 ```
 
-**Nota**: Apenas o responsável pelo evento ou admin pode gerar QR codes. Se não existir ativação para o evento, uma será criada automaticamente.
+**QR Code contém URL:**
+```
+https://seuapp.com/checkin?uuid=abc123-def456&ativacaoId=507f1f77bcf86cd799439011&tipo=ativacao_checkin&timestamp=1701234567890
+```
 
-## 3. Usuário Escaneando QR Code no Site
+**Nota**: Apenas usuários autenticados podem gerar QR codes. Cada QR Code contém uma URL completa que funciona com qualquer leitor de QR Code.
 
-### Passo 1: Acessar Scanner
-O usuário acessa o site e clica em "Escanear QR Code"
+## 3. Usuário Escaneando QR Code
 
-### Passo 2: Abrir Câmera
-O site abre a câmera do dispositivo para escanear o QR code do promotor
+### Fluxo Otimizado (UX Superior)
 
-### Passo 3: Escanear e Validar
+1. **Usuário escaneia QR Code** com qualquer câmera de celular
+2. **URL abre automaticamente** no navegador do dispositivo:
+   ```
+   https://seuapp.com/checkin?uuid=abc123-def456&ativacaoId=507f1f77bcf86cd799439011&tipo=ativacao_checkin&timestamp=1701234567890
+   ```
+3. **Frontend extrai dados** automaticamente dos parâmetros da URL
+4. **Chama mutation** automaticamente para fazer check-in
+
+### Via GraphQL:
 ```graphql
 mutation EscanearQRCode {
   escanearQRCode(
-    qrCodeData: "{\"uuid\":\"123e4567-e89b-12d3-a456-426614174000\",\"tipo\":\"ativacao_checkin\",\"eventoId\":\"cl9ebqhxk00as2w01wh9vsm3k\",\"timestamp\":1640995200000}"
+    qrCodeData: "https://seuapp.com/checkin?uuid=abc123-def456&ativacaoId=507f1f77bcf86cd799439011&tipo=ativacao_checkin&timestamp=1701234567890"
     local: "Auditório Principal"
   ) {
     success
@@ -273,7 +272,7 @@ query MinhaPontuacao {
 }
 ```
 
-## 7. Fluxo Completo de Uso
+## 7. Fluxo Completo de Uso ATUALIZADO
 
 ### Para o Admin:
 1. Cria evento no sistema
@@ -281,21 +280,33 @@ query MinhaPontuacao {
 3. Monitora check-ins em tempo real
 
 ### Para o Promotor:
-1. Acessa `/gerar-code` no site
-2. Seleciona evento no dropdown
-3. Clica "Gerar Code"
-4. Recebe QR code para o evento
-5. Exibe QR code no local do evento
+1. **Faz login** no webapp administrativo
+2. **Acessa seção "Gerar QR Code"**
+3. **Seleciona ativação** no dropdown (apenas ativas)
+4. **Clica "Gerar QR Code"**
+5. **Recebe QR code com URL funcional**
+6. **Exibe QR code** na tela/projetor
 
-### Para o Participante:
-1. Faz login no app móvel
-2. Escaneia QR code da ativação
-3. Confirma check-in
-4. Recebe pontos automaticamente
-5. Visualiza histórico e pontuação total
+### Para o Participante (UX Otimizada):
+1. **Escaneia QR code** com qualquer câmera de celular
+2. **URL abre automaticamente** no navegador
+3. **Check-in processado automaticamente**
+4. **Recebe confirmação** e pontos são somados
+5. **Sem passos manuais** - fluxo 100% automático
 
-### Tecnicamente:
-- **Site**: Promotor gera QR → Chama `gerarQRCodePorEvento` → Recebe QR code
-- **App Móvel**: Escaneia QR → Chama `buscarAtivacaoPorUuid` → Chama `realizarCheckin`
-- **Backend**: Valida usuário → Verifica ativação → Previne duplicação → Cria check-in → Atualiza pontuação
+### Tecnicamente (Nova Arquitetura):
+- **QR Code**: Contém URL completa (não JSON)
+  ```
+  https://app.com/checkin?uuid=abc123&ativacaoId=507f1f77&tipo=ativacao_checkin&timestamp=1701234567890
+  ```
+- **Frontend**: Extrai parâmetros da URL automaticamente
+- **Backend**: `escanearQRCode` processa URL → Valida → Cria check-in
+- **Compatibilidade**: Funciona com qualquer leitor de QR Code
+
+### Vantagens da Nova Implementação:
+✅ **Zero Friction**: Usuário não precisa abrir app específico  
+✅ **Universal**: Funciona em qualquer dispositivo com câmera  
+✅ **Automático**: Redirecionamento e processamento sem intervenção  
+✅ **Seguro**: Validações de tipo, ativação ativa, anti-duplicação  
+✅ **Performance**: Busca otimizada com UUID + ID da ativação
 

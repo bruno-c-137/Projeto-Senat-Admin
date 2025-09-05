@@ -74,7 +74,10 @@ export const Ativacao = list({
     createdAt: timestamp({
       defaultValue: { kind: 'now' },
       validation: { isRequired: true },
-      label: 'Data de Criação'
+      label: 'Data de Criação',
+      ui: {
+        createView: { fieldMode: 'hidden' },
+      }
     }),
   },
   ui: {
