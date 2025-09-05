@@ -58,7 +58,6 @@ export const User = list({
       }),
       ui: {
         description: 'Pontuação total (pontos manuais + pontos de check-ins)',
-        query: '{ pontuacaoTotal }',
         createView: { fieldMode: 'hidden' }, // Esconde na criação
         itemView: { fieldMode: 'read' } // Mostra apenas leitura na visualização
       }
