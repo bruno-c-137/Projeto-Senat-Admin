@@ -75,7 +75,58 @@ export const buscarAtivacaoPorUuid = graphql.field({
 
 // Query para buscar histórico de check-ins do usuário
 export const meuHistoricoCheckins = graphql.field({
-  type: graphql.list(graphql.JSON),
+  type: graphql.list(
+    graphql.object<{
+      id: string
+      pontosGanhos: number
+      local: string | null
+      createdAt: string
+      ativacao: {
+        id: string
+        nome: string
+        evento?: {
+          id: string
+          evento: string
+        } | null
+      }
+    }>()({
+      name: 'CheckInHistorico',
+      fields: {
+        id: graphql.field({ type: graphql.nonNull(graphql.ID) }),
+        pontosGanhos: graphql.field({ type: graphql.nonNull(graphql.Int) }),
+        local: graphql.field({ type: graphql.String }),
+        createdAt: graphql.field({ type: graphql.nonNull(graphql.String) }),
+        ativacao: graphql.field({
+          type: graphql.object<{
+            id: string
+            nome: string
+            evento?: {
+              id: string
+              evento: string
+            } | null
+          }>()({
+            name: 'AtivacaoHistorico',
+            fields: {
+              id: graphql.field({ type: graphql.nonNull(graphql.ID) }),
+              nome: graphql.field({ type: graphql.nonNull(graphql.String) }),
+              evento: graphql.field({
+                type: graphql.object<{
+                  id: string
+                  evento: string
+                }>()({
+                  name: 'EventoHistorico',
+                  fields: {
+                    id: graphql.field({ type: graphql.nonNull(graphql.ID) }),
+                    evento: graphql.field({ type: graphql.nonNull(graphql.String) }),
+                  },
+                }),
+              }),
+            },
+          }),
+        }),
+      },
+    })
+  ),
   async resolve(source, args, context: Context) {
     const userId = verificarAutenticacao(context)
     if (!userId) throw new Error(ERROR_MESSAGES.NAO_AUTENTICADO)

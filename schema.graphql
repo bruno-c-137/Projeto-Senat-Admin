@@ -506,7 +506,7 @@ type Query {
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
   buscarAtivacaoPorUuid(uuid: String!): AtivacaoResult
-  meuHistoricoCheckins: [JSON]
+  meuHistoricoCheckins: [CheckInHistorico]
 }
 
 type AtivacaoResult {
@@ -514,6 +514,25 @@ type AtivacaoResult {
   message: String!
   ativacao: JSON
   jaFezCheckin: Boolean
+}
+
+type CheckInHistorico {
+  id: ID!
+  pontosGanhos: Int!
+  local: String
+  createdAt: String!
+  ativacao: AtivacaoHistorico
+}
+
+type AtivacaoHistorico {
+  id: ID!
+  nome: String!
+  evento: EventoHistorico
+}
+
+type EventoHistorico {
+  id: ID!
+  evento: String!
 }
 
 union AuthenticatedItem = User
