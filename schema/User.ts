@@ -1,10 +1,43 @@
 import { list } from '@keystone-6/core'
-import { allowAll } from '@keystone-6/core/access'
-import { text, timestamp, password, checkbox, integer, relationship, virtual } from '@keystone-6/core/fields'
+import { allowAll, denyAll } from '@keystone-6/core/access'
+import { text, timestamp, password, checkbox, integer, relationship, virtual, image } from '@keystone-6/core/fields'
 import { graphql } from '@keystone-6/core'
 
 export const User = list({
-  access: allowAll,
+  access: {
+    operation: {
+      query: allowAll, // Todos podem ver perfis
+      create: allowAll, // Permitir registro de novos usuários
+      update: ({ session }) => {
+        // Apenas usuários autenticados podem editar
+        // Controle específico será feito a nível de item
+        return !!session
+      },
+      delete: ({ session }) => {
+        // Apenas admins podem deletar usuários
+        return session?.data.isAdmin || false
+      }
+    },
+    filter: {
+      // Controle de filtros para consultas específicas se necessário
+      query: () => true, // Por enquanto permite ver todos
+    },
+    item: {
+      // Controle de acesso a itens específicos
+      update: ({ session, item }) => {
+        if (!session) return false
+        // Admins podem editar qualquer usuário
+        if (session.data.isAdmin) return true
+        // Usuários podem editar apenas seu próprio perfil
+        return session.itemId === item.id
+      },
+      delete: ({ session, item }) => {
+        if (!session) return false
+        // Apenas admins podem deletar usuários
+        return session.data.isAdmin || false
+      }
+    }
+  },
   fields: {
     name: text({
       validation: { isRequired: true },
@@ -14,6 +47,19 @@ export const User = list({
       validation: { isRequired: true },
       isIndexed: 'unique',
       label: 'E-mail'
+    }),
+    telefone: text({
+      label: 'Telefone',
+      ui: {
+        description: 'Telefone para contato (opcional)'
+      }
+    }),
+    fotoPerfil: image({
+      storage: 'local_images',
+      label: 'Foto de Perfil',
+      ui: {
+        description: 'Sua foto de perfil (opcional)'
+      }
     }),
     password: password({
       validation: { isRequired: true },
@@ -64,7 +110,11 @@ export const User = list({
     }),
     createdAt: timestamp({
       defaultValue: { kind: 'now' },
-      label: 'Data de Criação'
+      label: 'Data de Criação',
+      ui: {
+        createView: { fieldMode: 'hidden' },
+
+      }
     }),
   },
 })
