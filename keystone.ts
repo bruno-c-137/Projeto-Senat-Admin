@@ -44,17 +44,18 @@ export default withAuth(
     },
     lists,
     session,
-    storage: {
-      local_images: {
-        kind: 'local',
-        type: 'image',
-        generateUrl: (path: string) => `${process.env.SERVER_URL || 'http://localhost:3000'}/images${path}`,
-        serverRoute: {
-          path: '/images',
-        },
-        storagePath: 'public/images',
-      },
-    },
+    // storage: {
+    //   // Storage local para desenvolvimento (opcional)
+    //   local_images: {
+    //     kind: 'local',
+    //     type: 'image',
+    //     generateUrl: (path: string) => `${process.env.SERVER_URL || 'http://localhost:3000'}/images${path}`,
+    //     serverRoute: {
+    //       path: '/images',
+    //     },
+    //     storagePath: 'public/images',
+    //   },
+    // },
     server: {
       cors: {
         origin: [

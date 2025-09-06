@@ -1263,6 +1263,20 @@
     fast-deep-equal "^3.1.3"
     graphql "^16.8.1"
 
+"@keystone-6/cloudinary@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@keystone-6/cloudinary/-/cloudinary-8.0.0.tgz#45b10a6be6a30973a6fd08afbafb3c74eae0bccc"
+  integrity sha512-hV2KzC+Eym1aGMFk/f7TmzbND1RaQehyoF4yGDH5SxgC5oBa7sUfg5bjUxpMn9X4nq5DhkoU+ECG/qFTpzgIPA==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@keystone-ui/button" "^7.0.2"
+    "@keystone-ui/core" "^5.0.2"
+    "@keystone-ui/fields" "^7.2.0"
+    "@keystone-ui/pill" "^7.0.2"
+    "@types/react" "^18.0.9"
+    cloudinary "^2.0.0"
+    react "^18.2.0"
+
 "@keystone-6/core@^6.0.0":
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/@keystone-6/core/-/core-6.5.1.tgz#0b6ac5e57ecbfea20a77b1a14b6d36fc942cb2ed"
@@ -2453,7 +2467,7 @@
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.12.tgz#b5d76568485b02a307238270bfe96cb51ee2a044"
   integrity sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==
 
-"@types/react@^18.3.3":
+"@types/react@^18.0.9", "@types/react@^18.3.3":
   version "18.3.24"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.24.tgz#f6a5a4c613242dfe3af0dcee2b4ec47b92d9b6bd"
   integrity sha512-0dLEBsA1kI3OezMBF8nSsb7Nk19ZnsyE1LLhB8r27KbgU5H4pvuqZLdtE+aUkJVoXgTVuA+iLIwmZ0TuK4tx6A==
@@ -2799,6 +2813,14 @@ cliui@^6.0.0:
     string-width "^4.2.0"
     strip-ansi "^6.0.0"
     wrap-ansi "^6.2.0"
+
+cloudinary@^2.0.0, cloudinary@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/cloudinary/-/cloudinary-2.7.0.tgz#571572409493b9ccc1dd57df3ddbdf56b91072c9"
+  integrity sha512-qrqDn31+qkMCzKu1GfRpzPNAO86jchcNwEHCUiqvPHNSFqu7FTNF9FuAkBUyvM1CFFgFPu64NT0DyeREwLwK0w==
+  dependencies:
+    lodash "^4.17.21"
+    q "^1.5.1"
 
 color-convert@^2.0.1:
   version "2.0.1"
@@ -4370,6 +4392,11 @@ pure-rand@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/pure-rand/-/pure-rand-6.1.0.tgz#d173cf23258231976ccbdb05247c9787957604f2"
   integrity sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==
+
+q@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
+  integrity sha512-kV/CThkXo6xyFEZUugw/+pIOywXcDbFYgSct5cT3gqlbkBE1SJdwy6UQoZvodiWF/ckQLZyDE/Bu1M6gVu5lVw==
 
 qrcode@^1.5.4:
   version "1.5.4"

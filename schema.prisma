@@ -16,11 +16,7 @@ model User {
   name                    String    @default("")
   email                   String    @unique @default("")
   telefone                String    @default("")
-  fotoPerfil_id           String?
-  fotoPerfil_filesize     Int?
-  fotoPerfil_width        Int?
-  fotoPerfil_height       Int?
-  fotoPerfil_extension    String?
+  fotoPerfil              Json?
   password                String
   isAdmin                 Boolean   @default(false)
   pontos                  Int?      @default(0)

@@ -1,7 +1,12 @@
 import { list } from '@keystone-6/core'
 import { allowAll, denyAll } from '@keystone-6/core/access'
-import { text, timestamp, password, checkbox, integer, relationship, virtual, image } from '@keystone-6/core/fields'
+import { text, timestamp, password, checkbox, integer, relationship, virtual } from '@keystone-6/core/fields'
+import { cloudinaryImage } from '@keystone-6/cloudinary'
 import { graphql } from '@keystone-6/core'
+import * as dotenv from 'dotenv'
+
+// Carregar variáveis de ambiente
+dotenv.config()
 
 export const User = list({
   access: {
@@ -54,11 +59,16 @@ export const User = list({
         description: 'Telefone para contato (opcional)'
       }
     }),
-    fotoPerfil: image({
-      storage: 'local_images',
+    fotoPerfil: cloudinaryImage({
+      cloudinary: {
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
+        apiKey: process.env.CLOUDINARY_API_KEY!,
+        apiSecret: process.env.CLOUDINARY_API_SECRET!,
+        folder: 'senat-admin/avatares',
+      },
       label: 'Foto de Perfil',
       ui: {
-        description: 'Sua foto de perfil (opcional)'
+        description: 'Sua foto de perfil (será armazenada no Cloudinary para melhor performance)'
       }
     }),
     password: password({
