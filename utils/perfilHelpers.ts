@@ -4,18 +4,18 @@ import { Context } from '.keystone/types'
 // Query fragments padronizadas para perfil
 export const PERFIL_COMPLETO = `
   id name email telefone pontos pontuacaoTotal createdAt
-  fotoPerfil { id url filesize width height extension }
+  fotoPerfil { id filename originalFilename mimetype publicUrl publicUrlTransformed(transformation: { width: "400", height: "400", crop: "fill", gravity: "face" }) }
   checkIns { id pontosGanhos local createdAt ativacao { nome evento { evento } } }
 `
 
 export const PERFIL_BASICO = `
   id name email telefone pontos pontuacaoTotal
-  fotoPerfil { id url filesize }
+  fotoPerfil { id filename publicUrl publicUrlTransformed(transformation: { width: "400", height: "400", crop: "fill", gravity: "face" }) }
 `
 
 export const PERFIL_ADMIN = `
   id name email telefone pontuacaoTotal createdAt
-  fotoPerfil { id url }
+  fotoPerfil { id filename publicUrl }
 `
 
 // Helper: Tipo de resposta padrão para perfil

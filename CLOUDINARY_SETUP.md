@@ -107,11 +107,11 @@ mutation AtualizarPerfil($name: String, $telefone: String, $fotoPerfil: Upload) 
       telefone
       fotoPerfil {
         id
-        url
-        filesize
-        width
-        height
-        extension
+        filename
+        originalFilename
+        mimetype
+        publicUrl
+        publicUrlTransformed(transformation: { width: "400", height: "400", crop: "fill", gravity: "face" })
       }
       pontuacaoTotal
     }
@@ -147,11 +147,11 @@ mutation UploadAvatar($fotoPerfil: Upload) {
       name
       fotoPerfil {
         id
-        url
-        filesize
-        width
-        height
-        extension
+        filename
+        originalFilename
+        mimetype
+        publicUrl
+        publicUrlTransformed(transformation: { width: "400", height: "400", crop: "fill", gravity: "face" })
       }
     }
   }
@@ -171,11 +171,11 @@ query {
       telefone
       fotoPerfil {
         id
-        url
-        filesize
-        width
-        height
-        extension
+        filename
+        originalFilename
+        mimetype
+        publicUrl
+        publicUrlTransformed(transformation: { width: "400", height: "400", crop: "fill", gravity: "face" })
       }
       pontuacaoTotal
       createdAt

@@ -65,8 +65,9 @@ mutation AtualizarPerfil {
         "telefone": "(11) 99999-9999",
         "fotoPerfil": {
           "id": "img123",
-          "url": "http://localhost:3000/images/foto.jpg",
-          "filesize": 102400
+          "filename": "foto.jpg",
+          "publicUrl": "https://res.cloudinary.com/dvxzosi8n/image/upload/senat-admin/avatares/img123.jpg",
+          "publicUrlTransformed": "https://res.cloudinary.com/dvxzosi8n/image/upload/w_400,h_400,c_fill,g_face/senat-admin/avatares/img123.jpg"
         },
         "pontuacaoTotal": 150
       }
@@ -107,8 +108,8 @@ query MeuPerfil {
         "pontos": 50,
         "fotoPerfil": {
           "id": "img123",
-          "url": "http://localhost:3000/images/foto.jpg",
-          "filesize": 102400,
+          "filename": "foto.jpg",
+          "publicUrl": "https://res.cloudinary.com/dvxzosi8n/image/upload/senat-admin/avatares/img123.jpg",
           "width": 400,
           "height": 400,
           "extension": "jpg"
@@ -173,7 +174,8 @@ query PerfilUsuario {
         "telefone": "(11) 99999-9999",
         "fotoPerfil": {
           "id": "img123",
-          "url": "http://localhost:3000/images/foto.jpg"
+          "filename": "foto.jpg",
+          "publicUrl": "https://res.cloudinary.com/dvxzosi8n/image/upload/senat-admin/avatares/img123.jpg"
         },
         "pontuacaoTotal": 150,
         "createdAt": "2024-01-15T10:30:00Z"
@@ -240,7 +242,10 @@ mutation AtualizarFoto {
   ) {
     id
     fotoPerfil {
-      url
+      id
+      filename
+      publicUrl
+      publicUrlTransformed(transformation: { width: "400", height: "400", crop: "fill", gravity: "face" })
     }
   }
 }

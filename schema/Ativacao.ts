@@ -8,10 +8,29 @@ export const Ativacao = list({
     plural: 'Ativacoes'
   },
   hooks: {
-    validateInput: ({ resolvedData, addValidationError }) => {
-      // Valida se o evento foi selecionado
-      if (!resolvedData.evento) {
-        addValidationError('Evento é obrigatório')
+    validateInput: ({ resolvedData, addValidationError, operation }) => {
+      // Validação de evento obrigatório
+      if (operation === 'create') {
+        if (!resolvedData.evento) {
+          addValidationError('Evento é obrigatório')
+        }
+      } else if (operation === 'update') {
+        // Na atualização, impede a remoção do evento
+        if (resolvedData.hasOwnProperty('evento')) {
+          const eventoValue = resolvedData.evento
+          
+          const isRemovingEvent = (
+            eventoValue === null ||
+            eventoValue === "" ||
+            (typeof eventoValue === 'object' && 
+             eventoValue !== null && 
+             eventoValue.disconnect === true)
+          )
+          
+          if (eventoValue !== undefined && isRemovingEvent) {
+            addValidationError('Evento é obrigatório')
+          }
+        }
       }
     }
   },
